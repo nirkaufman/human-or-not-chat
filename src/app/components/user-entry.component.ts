@@ -39,11 +39,13 @@ import {ChatFeedComponent} from "./chat-feed.component";
                   <div class="d-flex flex-row justify-content-center align-items-center pe-1"
                        [ngStyle]="{border: '2px solid black'}">
 
-                      <div class="ms-2" [ngStyle]="{width: '12px', height: '22px', backgroundColor: '#222222'}"></div>
+                      <div *ngIf="!dirtyUserPrompt" [@inOutAnimation] class="ms-2" [ngStyle]="{width: '12px', height: '22px', backgroundColor: '#222222'}"></div>
                       
                       <input [ngStyle]="{border: 'none', outline: 'none'}" 
                              #userPrompt 
-                             autofocus
+                             [autofocus]="true"
+                             (keydown)="setDirtyUserPrompt()"
+                             (keydown.enter)="sendMessage()"
                              [readOnly]="gameService.gameEnded$ | async" type="text" class="p-2 border-1" />
                       
                       <ng-lottie *ngIf="!(gameService.gameEnded$ | async)"
@@ -75,6 +77,8 @@ export class UserEntryComponent implements AfterViewInit {
   CHAT_CONFIG = inject(ChatConfigService);
   chatFeedComponent =  inject(ChatFeedComponent);
 
+  dirtyUserPrompt = false;
+
   options: AnimationOptions = {
     loop: false,
     autoplay: true,
@@ -104,5 +108,9 @@ export class UserEntryComponent implements AfterViewInit {
     this.apiService.sendMessage(this.userPrompt.nativeElement.value);
     this.chatFeedComponent.scrollToBottom()
     clearTimeout(this.timerId);
+  }
+
+  setDirtyUserPrompt() {
+    this.dirtyUserPrompt = true;
   }
 }
