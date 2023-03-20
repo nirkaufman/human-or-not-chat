@@ -15,11 +15,7 @@ import { Component } from '@angular/core';
                   <p>Searching for your partner…<br/>
                       This can take a few seconds. Don’t close this window.</p>
               </div>
-
-              <p class="text-center">
-                  <strong>You will send the first message.</strong>
-              </p>
-
+              
           </div>
       </div>
   `,

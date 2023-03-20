@@ -18,7 +18,7 @@ import {GameService} from "./services/game.service";
           
           <div class="container">
               <div class="row">
-                  <div class="col-lg-8 col-sm-10 mx-auto">
+                  <div class="col-lg-8 col-sm-10 mx-auto pb-4">
                       <chat-feed></chat-feed>
                       <decision-box *ngIf="gameService.gameEnded$ | async"/>
                   </div>
