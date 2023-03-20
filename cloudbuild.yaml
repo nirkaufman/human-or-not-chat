@@ -1,0 +1,79 @@
+# by default steps are running sequentially based on their order.
+# if a step has a waitFor field, it will run concurrently.
+# if it doesn't have a waitFor field it will wait for all previous steps.
+# waitFor with ['-'] will run concurrently at the start of the build.
+
+steps:
+  - id: sonarqube-scan
+    name: 'us-docker.pkg.dev/${PROJECT_ID}/infra-docker/sonar-scanner'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - 'if [ $BRANCH_NAME == "master" ] || [ $BRANCH_NAME == "prod"]; then sonar-scanner -Dsonar.host.url=http://sonarqube.publishing-testing.ai21.com/sonarqube/ -Dsonar.projectKey=$_GIT_REPO -Dsonar.sources=. -Dsonar.qualitygate.wait=true; fi'
+
+  # set up ssh access
+  - id: fetch-code
+    name: gcr.io/cloud-builders/git
+    args: ['fetch', '--unshallow', '--tags']
+    waitFor: ['-']
+
+  - id: setup-ssh-access
+    name: 'gcr.io/cloud-builders/git'
+    entrypoint: 'bash'
+    secretEnv:
+      - BITBUCKET_SSH_KEY
+    volumes:
+      - name: 'vol1'
+        path: '/root/.ssh'
+    args:
+      - '-c'
+      - |
+        mkdir -p -m 0700 .ssh && \
+        echo "$${BITBUCKET_SSH_KEY}" > /root/.ssh/id_rsa && \
+        chmod 600 /root/.ssh/id_rsa
+    waitFor: ['fetch-code']
+
+  # Install packages
+  - id: npm-install
+    name: 'us-docker.pkg.dev/publishing-337912/infra-docker/ai21-repo-utils/ci-custom-npm-18'
+    args: [ 'npm', 'install' ]
+    volumes:
+      - name: 'vol1'
+        path: '/root/.ssh'
+    waitFor: ['setup-ssh-access']
+
+  # build
+  - id: build-app
+    name: 'us-docker.pkg.dev/publishing-337912/infra-docker/ai21-repo-utils/ci-custom-npm-18'
+    waitFor: ['npm-install']
+    args: ['build']
+
+  # sync build with bucket
+  - id: rsync-bucket
+    name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'gsutil'
+    args: ['-m', 'rsync', '-c', '-d', '-r', './build', 'gs://ai21-wordtune-staging-webapp-assets/human-or-not/whatever']
+
+  # report status to bitbucket
+  - id: bitbucket-status
+    name: "us-docker.pkg.dev/publishing-337912/infra-docker/ai21-repo-utils/ci-bitbucket-build-status:curl"
+    secretEnv:
+      - BITBUCKET_PASSWORD
+    env:
+      - "BUILD_ID=$BUILD_ID"
+      - "COMMIT_SHA=$COMMIT_SHA"
+      - "GIT_REPO=$_GIT_REPO"
+      - "PROJECT_ID=$PROJECT_ID"
+
+availableSecrets:
+  secretManager:
+    - env: BITBUCKET_PASSWORD
+      versionName: $_BITBUCKET_USER_PASSWORD
+    - env: BITBUCKET_SSH_KEY
+      versionName: $_BITBUCKET_SECRET_VERSION
+
+timeout: 600s
+
+options:
+  pool:
+    name: projects/$PROJECT_ID/locations/us-central1/workerPools/E2-HIGHCPU-32

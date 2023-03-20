@@ -1,0 +1,77 @@
+@import "~bootstrap/dist/css/bootstrap.css";/* You can add global styles to this file, and also import other style files */
+
+/* Custom Fonts and utilities */
+
+@font-face {
+    font-family: 'Redaction-regular';
+    src: url('./assets/fonts/redaction/OTF/Redaction-Regular.otf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Redaction-35-regular';
+    src: url('./assets/fonts/redaction/OTF/Redaction35-Regular.otf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Satoshi-Regular';
+    src: url('./assets/fonts/satoshi/OTF/Satoshi-Regular.otf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Satoshi-Variable';
+    src: url('./assets/fonts/satoshi/Variable/Satoshi-Variable.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.ff-redaction {
+    font-family: 'Redaction-regular', sans-serif;
+}
+
+.ff-redaction-35 {
+    font-family: 'Redaction-35-regular', sans-serif;
+}
+
+.ff-satoshi {
+    font-family: 'Satoshi-Regular', sans-serif;
+}
+
+.ff-satoshi-variable {
+    font-family: 'Satoshi-Variable', sans-serif;
+}
+
+.fw-500 {
+    font-weight: 500;
+}
+
+.fw-400 {
+    font-weight: 400;
+}
+
+.fw-700 {
+    font-weight: 700;
+}
+
+.fs-20 {
+    font-size: 20px;
+}
+
+/*  Disable bootstrap input glow  */
+textarea:focus,
+input[type="text"]:focus,
+.uneditable-input:focus {
+    border: none;
+    box-shadow: none;
+    outline: 0 none;
+}
+
+*:focus {
+    outline: 0;
+}
+
