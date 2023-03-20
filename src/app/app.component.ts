@@ -8,14 +8,16 @@ import {GameService} from "./services/game.service";
       <app-loading-chat *ngIf="gameService.chatLoading$ | async"></app-loading-chat>
 
       <div *ngIf="!(gameService.chatLoading$ | async)">
-          
-          <div class="d-flex justify-content-between px-lg-4 px-2 pt-lg-3 pt-2 sticky-top bg-white">
-              <p class="pe-0 ff-redaction-35 fw-400 fs-20">Human or Not</p>
-              <p class="pe-0 ff-satoshi-variable fw-700 fs-20" >
-                  {{ gameService.timeLeft$ | async}}
-              </p>
+
+          <div class="container">
+              <div class="d-flex justify-content-between px-lg-4 px-2 pt-lg-3 pt-2 sticky-top bg-white">
+                  <p class="pe-0 ff-redaction-35 fw-400 fs-20">Human or Not</p>
+                  <p class="pe-0 ff-satoshi-variable fw-700 fs-20">
+                      {{ gameService.timeLeft$ | async}}
+                  </p>
+              </div>
           </div>
-          
+
           <div class="container">
               <div class="row">
                   <div class="col-lg-8 col-sm-10 mx-auto pb-4">
