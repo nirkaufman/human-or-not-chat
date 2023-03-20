@@ -46,7 +46,7 @@ export class ApiService {
 
     const notificationMessage: Message = {
       user: UserType.System,
-      text: 'Conversion begins',
+      text: 'Conversation',
       inProgress: false,
     }
 
